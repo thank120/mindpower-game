@@ -95,7 +95,7 @@
   </style>
 </head>
 <body>
-  <h1>마인드파워 카드게임</h1>
+  <h1>마인드파워 카드게임!</h1>
   <button onclick="startGame()">게임 시작</button>
   <div id="timer"></div>
   <div id="card-container"></div>
@@ -143,14 +143,14 @@
 
     function getCharacterImage(name) {
       const map = {
-        "토끼": "토끼.png",
-        "강아지": "강아지.png",
-        "여우": "여우.png",
-        "곰": "곰.png",
-        "호랑이": "호랑이.png",
-        "사슴": "토끼.png"  // 대체 이미지
+        "토끼": "이미지/토끼.png",
+        "강아지": "이미지/강아지.png",
+        "여우": "이미지/여우.png",
+        "곰": "이미지/곰.png",
+        "호랑이": "이미지/호랑이.png",
+        "사슴": "이미지/토끼.png"  // 대체 이미지
       };
-      return map[name] || "토끼.png";
+      return map[name] || "이미지/토끼.png";
     }
 
     function selectCard(div, id) {

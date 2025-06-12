@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>카드 등록 게임</title>
+  <style>
+    :root {
+      --bg-color: #fef9f4;
+      --main-color: #7f6bff;
+      --highlight-color: #ff6b6b;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 32px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .description {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    .input-section {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    #cardInput {
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid var(--main-color);
+      border-radius: 8px;
+      width: 200px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: var(--main-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:active {
+      transform: scale(0.95);
+    }
+    #startGameBtn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .card-count {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .card {
+      padding: 12px 25px;
+      background-color: white;
+      border: 3px solid;
+      border-radius: 12px;
+      font-size: 18px;
+      position: relative;
+    }
+    .card.selected {
+      border-color: var(--highlight-color) !important;
+      background-color: #fff2f2;
+    }
+    .delete-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: var(--highlight-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 14px;
+    }
+    .result-card {
+      margin-top: 20px;
+      padding: 15px 30px;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 12px;
+      background-color: #fff8e7;
+      border: 3px solid var(--highlight-color);
+      display: inline-block;
+    }
+    .rule {
+      font-size: 14px;
+      color: #777;
+      margin-top: 20px;
+    }
+    .log {
+      margin-top: 20px;
+      font-size: 14px;
+      text-align: left;
+      max-width: 500px;
+      margin-inline: auto;
+      padding: 10px;
+      background: #ffffffa8;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>카드 등록 게임</h1>
+  <div class="description">카드를 등록하고 게임을 시작해보세요!</div>
+
+  <div class="input-section">
+    <input type="text" id="cardInput" placeholder="카드 내용을 입력하세요" />
+    <button id="addCardBtn">등록</button>
+    <button id="startGameBtn" disabled>게임 시작</button>
+    <button id="resetBtn" class="hidden">다시하기</button>
+    <button id="clearAllBtn" class="hidden">전체 삭제</button>
+  </div>
+
+  <div class="card-count" id="cardCount">등록된 카드: 0개</div>
+  <div class="card-container" id="cardContainer"></div>
+  <div class="result-card hidden" id="resultCard"></div>
+  <div class="rule">※ 게임 규칙: 등록된 카드 중 하나가 무작위로 선택됩니다.</div>
+  <div class="log" id="historyLog"><strong>📝 선택 기록</strong><br /></div>
+
+  <!-- confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+  <script>
+    const cardInput = document.getElementById("cardInput");
+    const addCardBtn = document.getElementById("addCardBtn");
+    const startGameBtn = document.getElementById("startGameBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const clearAllBtn = document.getElementById("clearAllBtn");
+    const cardContainer = document.getElementById("cardContainer");
+    const resultCard = document.getElementById("resultCard");
+    const cardCount = document.getElementById("cardCount");
+    const historyLog = document.getElementById("historyLog");
+
+    const existingCards = new Set();
+    const registerSound = new Audio("register_sound.mp3");
+    const selectSound = new Audio("select_sound.mp3");
+    const bgm = new Audio("game_background_music.mp3");
+    bgm.loop = true;
+    bgm.volume = 0.3;
+
+    const borderColors = ['#7f6bff', '#ff6b6b', '#ffa500', '#00b894', '#00cec9'];
+
+    function updateUIState() {
+      const count = cardContainer.children.length;
+      cardCount.textContent = `등록된 카드: ${count}개`;
+      startGameBtn.disabled = count === 0;
+      clearAllBtn.classList.toggle("hidden", count === 0);
+    }
+
+    function createCard(text) {
+      if (existingCards.has(text)) {
+        alert("이미 등록된 카드입니다!");
+        return;
+      }
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.textContent = text;
+
+      const color = borderColors[Math.floor(Math.random() * borderColors.length)];
+      card.style.borderColor = color;
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "delete-btn";
+      deleteBtn.textContent = "×";
+
+      deleteBtn.addEventListener("click", () => {
+        card.remove();
+        existingCards.delete(text);
+        updateUIState();
+      });
+
+      card.appendChild(deleteBtn);
+      cardContainer.appendChild(card);
+      existingCards.add(text);
+      updateUIState();
+      registerSound.play();
+    }
+
+    addCardBtn.addEventListener("click", () => {
+      const text = cardInput.value.trim();
+      if (text !== "") {
+        createCard(text);
+        cardInput.value = "";
+      }
+    });
+
+    startGameBtn.addEventListener("click", () => {
+      bgm.currentTime = 0;
+      bgm.play(); // 배경음악 재생
+
+      startGameBtn.disabled = true;
+      resultCard.textContent = "⏳ 10초 후 카드가 선택됩니다...";
+      resultCard.classList.remove("hidden");
+
+      let countdown = 10;
+      const timer = setInterval(() => {
+        countdown--;
+        resultCard.textContent = `⏳ ${countdown}초 후 카드가 선택됩니다...`;
+        if (countdown <= 0) {
+          clearInterval(timer);
+          selectRandomCard();
+        }
+      }, 1000);
+    });
+
+    function selectRandomCard() {
+      const cards = cardContainer.querySelectorAll(".card");
+      cards.forEach(c => c.classList.remove("selected"));
+
+      const randomIndex = Math.floor(Math.random() * cards.length);
+      const selectedCard = cards[randomIndex];
+      const cardText = selectedCard.textContent.replace("×", "").trim();
+
+      selectedCard.classList.add("selected");
+      resultCard.textContent = `🎉 선택된 카드: ${cardText}`;
+      resultCard.classList.remove("hidden");
+      resetBtn.classList.remove("hidden");
+
+      const now = new Date().toLocaleString();
+      const logItem = document.createElement("div");
+      logItem.textContent = `🕒 ${now} - 선택된 카드: ${cardText}`;
+      historyLog.appendChild(logItem);
+
+      selectSound.play();
+      confetti({ spread: 80, particleCount: 80, origin: { y: 0.6 } });
+    }
+
+    resetBtn.addEventListener("click", () => {
+      resultCard.classList.add("hidden");
+      resultCard.textContent = "";
+      const cards = cardContainer.querySelectorAll(".card");
+      cards.forEach(c => c.classList.remove("selected"));
+      startGameBtn.disabled = cardContainer.children.length === 0;
+      resetBtn.classList.add("hidden");
+      bgm.pause(); // 배경음악 정지
+      bgm.currentTime = 0;
+    });
+
+    clearAllBtn.addEventListener("click", () => {
+      cardContainer.innerHTML = "";
+      existingCards.clear();
+      updateUIState();
+      resultCard.classList.add("hidden");
+      resultCard.textContent = "";
+      resetBtn.classList.add("hidden");
+      bgm.pause(); // 배경음악 정지
+      bgm.currentTime = 0;
+    });
+  </script>
+</body>
+</html>

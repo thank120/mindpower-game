@@ -1,128 +1,125 @@
-let cards = [];
-let players = [];
-let currentPlayerIndex = 0;
-let scores = [0, 0];
-let registeredPowerCards = [null, null];
-let playerHands = [[], []];
-let histories = [[], []];
 
-const instruction = document.getElementById("instruction");
-const handArea = document.getElementById("player-hand");
-const playZone = document.getElementById("play-zone");
-const scoreP1 = document.getElementById("score-p1");
-const scoreP2 = document.getElementById("score-p2");
-const turnDisplay = document.getElementById("turn-display");
-const sentenceOutput = document.getElementById("sentence-output");
-const missionOutput = document.getElementById("mission-output");
-const history1 = document.getElementById("p1-history");
-const history2 = document.getElementById("p2-history");
-const p1Label = document.getElementById("p1-label");
-const p2Label = document.getElementById("p2-label");
-const gameEnd = document.getElementById("game-end");
-const winner = document.getElementById("winner");
+let deck = [];
+let playerHand = [];
+let aiHand = [];
+let playerField = [];
+let aiField = [];
+let playerName = '';
+let currentPlayer = 'player'; // or 'ai'
 
-const missions = [
-  "소리 내어 또박또박 말해보세요!",
-  "눈을 마주치며 이야기해보세요!",
-  "손을 잡고 말해보세요!",
-  "서로 포옹하며 말해보세요!",
-  "친구의 이름을 넣어서 말해보세요!"
-];
+const turnDisplay = document.getElementById('turn-display');
+const instruction = document.getElementById('instruction');
+const playerHandDiv = document.getElementById('player-hand');
+const playerFieldDiv = document.getElementById('field-player');
+const aiFieldDiv = document.getElementById('field-ai');
+const playerLabel = document.getElementById('player-label');
+const playerHandCount = document.getElementById('player-hand-count');
+const aiHandCount = document.getElementById('ai-hand-count');
+const gameEnd = document.getElementById('game-end');
+const winner = document.getElementById('winner');
 
 function startGame() {
-  const p1 = document.getElementById("player1-name").value || "1P";
-  const p2 = document.getElementById("player2-name").value || "2P";
-  players = [p1, p2];
-  p1Label.textContent = p1;
-  p2Label.textContent = p2;
-  document.getElementById("setup").classList.add("hidden");
-  document.getElementById("game-area").classList.remove("hidden");
+  playerName = document.getElementById('player-name').value || '플레이어';
+  playerLabel.textContent = playerName;
 
-  fetch("mindpower_cards_en.json")
-    .then(res => res.json())
-    .then(data => {
-      cards = [...data.power_cards, ...data.action_cards, ...data.mind_cards].sort(() => Math.random() - 0.5);
-      drawInitialCards();
-      updateScore();
-      renderTurn();
-    });
+  document.getElementById('setup').classList.add('hidden');
+  document.getElementById('game-area').classList.remove('hidden');
+
+  initDeck();
+  shuffle(deck);
+
+  // 분배
+  playerHand = deck.splice(0, 6);
+  aiHand = deck.splice(0, 6);
+
+  updateHands();
+  updateField();
+  updateTurn();
 }
 
-function drawInitialCards() {
-  for (let i = 0; i < 2; i++) {
-    playerHands[i] = cards.splice(0, 6);
-    histories[i] = [];
+function initDeck() {
+  deck = [];
+  const power = ['사랑해', '고마워', '잘했어'];
+  const action = ['포옹해줘', '칭찬해줘', '눈 마주쳐줘'];
+  const mind = ['정말', '진심으로', '아주 많이'];
+
+  for (let p of power) deck.push({type: '파워카드', text: p});
+  for (let a of action) deck.push({type: '액션카드', text: a, linked_to: '사랑해'});
+  for (let m of mind) deck.push({type: '마인드카드', text: m});
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
 }
 
-function renderTurn() {
-  turnDisplay.textContent = `지금은 [${players[currentPlayerIndex]}] 차례입니다.`;
-  renderHand();
-}
-
-function renderHand() {
-  handArea.innerHTML = "";
-  playerHands[currentPlayerIndex].forEach((card, idx) => {
-    const div = document.createElement("div");
-    div.className = "card";
+function updateHands() {
+  playerHandDiv.innerHTML = '';
+  playerHand.forEach((card, i) => {
+    const div = document.createElement('div');
+    div.className = 'card';
     div.textContent = `[${card.type}] ${card.text}`;
-    div.onclick = () => playCard(idx);
-    handArea.appendChild(div);
+    div.onclick = () => playCard(i);
+    playerHandDiv.appendChild(div);
   });
+  playerHandCount.textContent = playerHand.length;
+  aiHandCount.textContent = aiHand.length;
 }
 
 function playCard(index) {
-  const player = currentPlayerIndex;
-  const card = playerHands[player][index];
-
-  if (card.type === "파워카드") {
-    registeredPowerCards[player] = card;
-    instruction.textContent = `${players[player]}이(가) '${card.text}' 파워카드를 등록했어요!`;
-  } else if (card.type === "마인드카드") {
-    if (!registeredPowerCards[player]) {
-      alert("먼저 파워카드를 등록하세요!");
+  if (currentPlayer !== 'player') return;
+  const card = playerHand[index];
+  if (card.type === '파워카드') {
+    playerField.push(card);
+    instruction.textContent = `${playerName}이(가) 파워카드 '${card.text}'을(를) 등록했습니다.`;
+  } else if (card.type === '마인드카드' && playerField.length > 0) {
+    instruction.textContent = `문장: '${card.text} ${playerName}! ${playerField[0].text}.'`;
+  } else if (card.type === '액션카드') {
+    const valid = playerField.some(p => p.text === card.linked_to);
+    if (!valid) {
+      alert('연결된 파워카드가 없습니다!');
       return;
     }
-    const sentence = `${registeredPowerCards[player].text} ${players[player]}야! ${card.text}.`;
-    sentenceOutput.textContent = sentence;
-    const mission = missions[Math.floor(Math.random() * missions.length)];
-    missionOutput.textContent = `💬 표현 미션: ${mission}`;
-    scores[player]++;
-    updateScore();
-    if (scores[player] >= 3) {
-      endGame(player);
-      return;
-    }
-  } else {
-    instruction.textContent = `${card.text} 액션카드를 사용했습니다.`;
+    instruction.textContent = `실천 미션: ${card.text}`;
   }
-
-  histories[player].push(card.text);
-  updateHistory();
-  updatePlayZone(card);
-  playerHands[player].splice(index, 1);
-  currentPlayerIndex = 1 - currentPlayerIndex;
-  renderTurn();
+  playerHand.splice(index, 1);
+  updateHands();
+  updateField();
+  checkWin();
+  currentPlayer = 'ai';
+  setTimeout(aiTurn, 1000);
 }
 
-function updateScore() {
-  scoreP1.textContent = scores[0];
-  scoreP2.textContent = scores[1];
+function updateField() {
+  playerFieldDiv.innerHTML = playerField.map(c => `<div class='card'>[${c.type}] ${c.text}</div>`).join('');
+  aiFieldDiv.innerHTML = aiField.map(c => `<div class='card'>[${c.type}] ${c.text}</div>`).join('');
 }
 
-function updateHistory() {
-  history1.textContent = histories[0].join(", ");
-  history2.textContent = histories[1].join(", ");
+function updateTurn() {
+  turnDisplay.textContent = currentPlayer === 'player' ? `${playerName} 차례입니다.` : 'AI 차례입니다.';
 }
 
-function updatePlayZone(card) {
-  const div = document.createElement("div");
-  div.className = "played-card";
-  div.textContent = `[${card.type}] ${card.text}`;
-  playZone.appendChild(div);
+function aiTurn() {
+  if (aiHand.length === 0) return;
+  const card = aiHand.find(c => c.type === '파워카드') || aiHand[0];
+  aiField.push(card);
+  instruction.textContent = `AI가 '${card.text}' 카드를 사용했습니다.`;
+  aiHand = aiHand.filter(c => c !== card);
+  updateHands();
+  updateField();
+  checkWin();
+  currentPlayer = 'player';
+  updateTurn();
 }
 
-function endGame(winnerIndex) {
-  gameEnd.classList.remove("hidden");
-  winner.textContent = `${players[winnerIndex]}님이 승리했습니다! 🎉`;
+function checkWin() {
+  if (playerHand.length === 0) {
+    gameEnd.classList.remove('hidden');
+    winner.textContent = `${playerName} 승리! 🎉`;
+  } else if (aiHand.length === 0) {
+    gameEnd.classList.remove('hidden');
+    winner.textContent = `AI 승리! 🤖`;
+  }
 }

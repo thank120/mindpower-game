@@ -12,7 +12,6 @@ h1 {
 button {
   font-size: 18px;
   padding: 10px 20px;
-  margin-top: 10px;
   background-color: #7f6bff;
   color: white;
   border: none;
@@ -46,6 +45,13 @@ input {
   font-weight: bold;
 }
 
-#player-hand, #play-zone, #history-zone {
+#player-hand, #play-zone, #sentence-output {
   margin-top: 20px;
+}
+
+#scoreboard {
+  font-size: 24px;
+  font-weight: bold;
+  color: #444;
+  margin: 10px 0;
 }

@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>마인드파워 카드 게임</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .card-container img {
+      width: 100px;
+      height: auto;
+      margin-top: 10px;
+    }
+    .popup {
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      border: 3px solid #7f6bff;
+      padding: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1000;
+    }
+    .popup img {
+      width: 120px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>마인드파워 카드 게임</h1>
+  <button onclick="drawCard()">카드 뽑기</button>
+  <div id="selected-card" class="card-container"></div>
+  <div id="card-popup" class="popup" onclick="closePopup()">
+    <img id="popup-image" src="" alt="캐릭터 이미지">
+    <div id="popup-text"></div>
+  </div>
+  <h3>선택 기록</h3>
+  <ul id="history"></ul>
+  <script src="script.js"></script>
+</body>
+</html>

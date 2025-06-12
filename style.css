@@ -1,5 +1,5 @@
 body {
-  font-family: 'BMJUA', sans-serif;
+  font-family: 'Arial', sans-serif;
   background-color: #fef9f4;
   text-align: center;
   padding: 20px;
@@ -12,7 +12,7 @@ h1 {
 button {
   font-size: 18px;
   padding: 10px 20px;
-  margin-bottom: 20px;
+  margin-top: 10px;
   background-color: #7f6bff;
   color: white;
   border: none;
@@ -20,39 +20,32 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #a28dff;
-}
-
-.hidden {
-  display: none;
-}
-
-#player-hand, #play-zone {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
+input {
+  font-size: 16px;
+  padding: 8px;
+  margin: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
 .card, .played-card {
-  background-color: white;
-  border: 2px solid #ccc;
-  border-radius: 12px;
+  display: inline-block;
   padding: 10px;
-  width: 120px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin: 5px;
+  background: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  width: 160px;
   cursor: pointer;
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
 }
 
 .played-card {
-  background-color: #dfffe0;
+  background-color: #e6ffe6;
   border-color: #4caf50;
-  color: #333;
   font-weight: bold;
+}
+
+#player-hand, #play-zone, #history-zone {
+  margin-top: 20px;
 }

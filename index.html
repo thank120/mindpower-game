@@ -2,17 +2,29 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>마인드파워 V2</title>
+  <title>마인드파워 V3 (2인 턴제)</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>마인드파워 카드게임 V2</h1>
-  <button id="start-button">게임 시작</button>
+  <h1>마인드파워 카드게임 V3</h1>
+  <div id="setup">
+    <input type="text" id="player1-name" placeholder="1P 이름" />
+    <input type="text" id="player2-name" placeholder="2P 이름" />
+    <button onclick="startGame()">게임 시작</button>
+  </div>
   <div id="game-area" class="hidden">
+    <h2 id="turn-display"></h2>
     <p id="instruction">먼저 파워카드를 등록해 주세요.</p>
     <div id="player-hand"></div>
     <div id="play-zone"></div>
+    <h3>선택한 카드 기록</h3>
+    <div id="history-zone">
+      <div><strong id="p1-label"></strong>: <span id="p1-history"></span></div>
+      <div><strong id="p2-label"></strong>: <span id="p2-history"></span></div>
+    </div>
   </div>
+  <audio id="sound-ding" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_d1d92e0f25.mp3?filename=correct-2-46134.mp3"></audio>
+  <audio id="sound-bbyong" src="https://cdn.pixabay.com/download/audio/2023/03/30/audio_47626e334b.mp3?filename=pop-147105.mp3"></audio>
   <script src="script.js"></script>
 </body>
 </html>

@@ -1,62 +1,26 @@
+
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: #fef9f4;
-  text-align: center;
+  font-family: sans-serif;
+  background-color: #fefefe;
   padding: 20px;
+  text-align: center;
 }
-
-h1 {
-  color: #7f6bff;
-}
-
-button {
-  font-size: 18px;
-  padding: 10px 20px;
-  background-color: #7f6bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-input {
-  font-size: 16px;
-  padding: 8px;
-  margin: 5px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.card, .played-card {
+.card {
   display: inline-block;
-  padding: 10px;
   margin: 5px;
-  background: white;
-  border: 2px solid #ccc;
+  padding: 10px;
+  border: 2px solid #888;
   border-radius: 8px;
   width: 160px;
+  background-color: white;
   cursor: pointer;
-  box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
 }
-
-.played-card {
-  background-color: #e6ffe6;
-  border-color: #4caf50;
-  font-weight: bold;
+.hidden { display: none; }
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 10px;
 }
-
-#player-hand, #play-zone, #sentence-output, #mission-output, #history-output {
-  margin-top: 20px;
-}
-
-#scoreboard {
-  font-size: 24px;
-  font-weight: bold;
-  color: #444;
+.player-block {
   margin: 10px 0;
-}
-
-#winner {
-  color: #ff4081;
-  font-size: 28px;
 }

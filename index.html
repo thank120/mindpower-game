@@ -3,11 +3,11 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>마인드파워 버튼 테스트</title>
+  <title>마인드파워 - 이름 입력 포함 작동 확인</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>버튼 작동 확인용 테스트 페이지</h1>
+  <h1>버튼 및 입력 테스트</h1>
 
   <div id="setup">
     <label>플레이어 수 선택 (2~5명):</label>
@@ -19,6 +19,7 @@
 
   <div id="game-area" class="hidden">
     <h2 id="turn-display">게임 시작됨</h2>
+    <div id="players-list"></div>
     <button onclick="resetGame()">다시 시작</button>
   </div>
 

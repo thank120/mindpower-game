@@ -144,3 +144,21 @@ function checkWin() {
     winner.textContent = `AI 승리!`;
   }
 }
+
+function resetGame() {
+  deck = [];
+  playerHand = [];
+  aiHand = [];
+  playerField = [];
+  aiField = [];
+  currentPlayer = 'player';
+  drewCard = false;
+
+  document.getElementById('setup').classList.remove('hidden');
+  document.getElementById('game-area').classList.add('hidden');
+  document.getElementById('winner').textContent = '';
+  document.getElementById('game-end').classList.add('hidden');
+  document.getElementById('instruction').textContent = '';
+  document.getElementById('player-name').value = '';
+  drawDeckDiv.innerHTML = '';
+}

@@ -5,7 +5,8 @@ let aiHand = [];
 let playerField = [];
 let aiField = [];
 let playerName = '';
-let currentPlayer = 'player'; // or 'ai'
+let currentPlayer = 'player';
+let drewCard = false;
 
 const turnDisplay = document.getElementById('turn-display');
 const instruction = document.getElementById('instruction');
@@ -17,35 +18,31 @@ const playerHandCount = document.getElementById('player-hand-count');
 const aiHandCount = document.getElementById('ai-hand-count');
 const gameEnd = document.getElementById('game-end');
 const winner = document.getElementById('winner');
+const drawDeckDiv = document.getElementById('draw-deck');
 
 function startGame() {
   playerName = document.getElementById('player-name').value || '플레이어';
   playerLabel.textContent = playerName;
-
   document.getElementById('setup').classList.add('hidden');
   document.getElementById('game-area').classList.remove('hidden');
 
   initDeck();
   shuffle(deck);
-
-  // 분배
   playerHand = deck.splice(0, 6);
   aiHand = deck.splice(0, 6);
 
-  updateHands();
-  updateField();
-  updateTurn();
+  update();
+  renderDrawButton();
 }
 
 function initDeck() {
-  deck = [];
-  const power = ['사랑해', '고마워', '잘했어'];
-  const action = ['포옹해줘', '칭찬해줘', '눈 마주쳐줘'];
-  const mind = ['정말', '진심으로', '아주 많이'];
+  const powers = ['사랑해', '고마워', '잘했어'];
+  const minds = ['정말', '진심으로', '아주 많이'];
+  const actions = ['포옹해줘', '칭찬해줘', '눈 마주쳐줘'];
 
-  for (let p of power) deck.push({type: '파워카드', text: p});
-  for (let a of action) deck.push({type: '액션카드', text: a, linked_to: '사랑해'});
-  for (let m of mind) deck.push({type: '마인드카드', text: m});
+  for (let p of powers) deck.push({type: '파워카드', text: p});
+  for (let m of minds) deck.push({type: '마인드카드', text: m});
+  for (let a of actions) deck.push({type: '액션카드', text: a, linked_to: '사랑해'});
 }
 
 function shuffle(arr) {
@@ -53,6 +50,12 @@ function shuffle(arr) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
+}
+
+function update() {
+  updateHands();
+  updateField();
+  updateTurn();
 }
 
 function updateHands() {
@@ -71,55 +74,73 @@ function updateHands() {
 function playCard(index) {
   if (currentPlayer !== 'player') return;
   const card = playerHand[index];
+  const hasPower = playerField.length > 0;
+
   if (card.type === '파워카드') {
     playerField.push(card);
-    instruction.textContent = `${playerName}이(가) 파워카드 '${card.text}'을(를) 등록했습니다.`;
-  } else if (card.type === '마인드카드' && playerField.length > 0) {
-    instruction.textContent = `문장: '${card.text} ${playerName}! ${playerField[0].text}.'`;
+    instruction.textContent = `${playerName}이(가) '${card.text}' 파워카드 등록`;
+  } else if (card.type === '마인드카드') {
+    if (!hasPower) return alert('먼저 파워카드를 등록하세요.');
+    instruction.textContent = `문장: "${card.text} ${playerName}! ${playerField[0].text}"`;
   } else if (card.type === '액션카드') {
-    const valid = playerField.some(p => p.text === card.linked_to);
-    if (!valid) {
-      alert('연결된 파워카드가 없습니다!');
-      return;
-    }
+    const found = playerField.some(p => p.text === card.linked_to);
+    if (!found) return alert('연결된 파워카드가 없습니다.');
     instruction.textContent = `실천 미션: ${card.text}`;
   }
+
   playerHand.splice(index, 1);
-  updateHands();
-  updateField();
+  update();
   checkWin();
   currentPlayer = 'ai';
+  drewCard = false;
   setTimeout(aiTurn, 1000);
 }
 
+function aiTurn() {
+  const card = aiHand.find(c => c.type === '파워카드') || aiHand.find(c => c.type !== '파워카드');
+  if (!card && deck.length > 0) {
+    aiHand.push(deck.shift());
+  } else if (card) {
+    if (card.type === '파워카드') aiField.push(card);
+    aiHand = aiHand.filter(c => c !== card);
+  }
+  update();
+  checkWin();
+  currentPlayer = 'player';
+}
+
+function renderDrawButton() {
+  drawDeckDiv.innerHTML = '';
+  const btn = document.createElement('button');
+  btn.textContent = '카드 뽑기';
+  btn.onclick = drawCard;
+  drawDeckDiv.appendChild(btn);
+}
+
+function drawCard() {
+  if (currentPlayer !== 'player' || drewCard || deck.length === 0) return;
+  const newCard = deck.shift();
+  playerHand.push(newCard);
+  drewCard = true;
+  instruction.textContent = `${playerName}이(가) 카드를 1장 뽑았습니다.`;
+  update();
+}
+
 function updateField() {
-  playerFieldDiv.innerHTML = playerField.map(c => `<div class='card'>[${c.type}] ${c.text}</div>`).join('');
-  aiFieldDiv.innerHTML = aiField.map(c => `<div class='card'>[${c.type}] ${c.text}</div>`).join('');
+  playerFieldDiv.innerHTML = playerField.map(c => `<div class='card'>${c.text}</div>`).join('');
+  aiFieldDiv.innerHTML = aiField.map(c => `<div class='card'>${c.text}</div>`).join('');
 }
 
 function updateTurn() {
   turnDisplay.textContent = currentPlayer === 'player' ? `${playerName} 차례입니다.` : 'AI 차례입니다.';
 }
 
-function aiTurn() {
-  if (aiHand.length === 0) return;
-  const card = aiHand.find(c => c.type === '파워카드') || aiHand[0];
-  aiField.push(card);
-  instruction.textContent = `AI가 '${card.text}' 카드를 사용했습니다.`;
-  aiHand = aiHand.filter(c => c !== card);
-  updateHands();
-  updateField();
-  checkWin();
-  currentPlayer = 'player';
-  updateTurn();
-}
-
 function checkWin() {
   if (playerHand.length === 0) {
     gameEnd.classList.remove('hidden');
-    winner.textContent = `${playerName} 승리! 🎉`;
+    winner.textContent = `${playerName} 승리!`;
   } else if (aiHand.length === 0) {
     gameEnd.classList.remove('hidden');
-    winner.textContent = `AI 승리! 🤖`;
+    winner.textContent = `AI 승리!`;
   }
 }

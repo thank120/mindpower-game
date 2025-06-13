@@ -1,43 +1,36 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>마인드파워 카드게임 - 1P vs AI</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>마인드파워 카드게임 - 완성형</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>마인드파워 카드게임 🧠</h1>
-
+  <h1>마인드파워 카드게임 🎴</h1>
   <div id="setup">
-    <input type="text" id="player-name" placeholder="당신의 이름을 입력하세요" />
+    <input type="text" id="player1-name" placeholder="1P 이름" />
+    <input type="text" id="player2-name" placeholder="2P 이름" />
     <button onclick="startGame()">게임 시작</button>
   </div>
-
   <div id="game-area" class="hidden">
     <h2 id="turn-display"></h2>
-
-    <div class="status">
-      <div><strong id="player-label"></strong> 카드: <span id="player-hand-count"></span></div>
-      <div><strong>AI</strong> 카드: <span id="ai-hand-count"></span></div>
+    <div id="scoreboard">
+      <span id="score-p1">0</span> : <span id="score-p2">0</span>
     </div>
-
-    <div id="instruction"></div>
-
+    <p id="instruction">먼저 파워카드를 등록해 주세요.</p>
     <div id="player-hand"></div>
-
-    <h3>등록된 카드 필드</h3>
-    <div id="field-player"></div>
-    <div id="field-ai"></div>
-
-    <div id="draw-deck"></div>
-
+    <div id="play-zone"></div>
+    <div id="sentence-output"></div>
+    <div id="mission-output"></div>
+    <div id="history-output">
+      <div><strong id="p1-label"></strong>: <span id="p1-history"></span></div>
+      <div><strong id="p2-label"></strong>: <span id="p2-history"></span></div>
+    </div>
     <div id="game-end" class="hidden">
       <h2 id="winner"></h2>
       <button onclick="location.reload()">다시 시작</button>
     </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>

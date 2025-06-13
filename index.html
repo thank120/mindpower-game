@@ -3,24 +3,32 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>마인드파워 - 이름 입력 포함 작동 확인</title>
+  <title>마인드파워 참가자</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>버튼 및 입력 테스트</h1>
-
-  <div id="setup">
-    <label>플레이어 수 선택 (2~5명):</label>
-    <input type="number" id="player-count" min="2" max="5" value="2" />
-    <div id="player-names"></div>
-    <button onclick="setupNames()">이름 입력칸 만들기</button>
-    <button onclick="startGame()">게임 시작</button>
+  <h1>마인드파워 - 참가자 화면</h1>
+  <div id="join-screen">
+    <label>조 번호 (1~5):</label>
+    <input type="number" id="room-number" min="1" max="5" value="1"><br>
+    <label>이름:</label>
+    <input type="text" id="username"><br>
+    <button onclick="joinRoom()">참가하기</button>
   </div>
 
-  <div id="game-area" class="hidden">
-    <h2 id="turn-display">게임 시작됨</h2>
-    <div id="players-list"></div>
-    <button onclick="resetGame()">다시 시작</button>
+  <div id="game-screen" class="hidden">
+    <h2 id="welcome-msg"></h2>
+    <p>아래에서 카드를 선택해 감정 표현 문장을 완성하세요.</p>
+    <div>
+      <h3>1단계: 마음 표현 선택</h3>
+      <div id="mind-cards" class="card-grid"></div>
+    </div>
+    <div>
+      <h3>2단계: 파워 단어 선택</h3>
+      <div id="power-cards" class="card-grid"></div>
+    </div>
+    <h3>당신의 문장:</h3>
+    <div id="result"></div>
   </div>
 
   <script src="script.js"></script>

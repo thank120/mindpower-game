@@ -3,11 +3,11 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>마인드파워 - 다인 구조</title>
+  <title>마인드파워 버튼 테스트</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>마인드파워 카드게임 🧠 (다인용)</h1>
+  <h1>버튼 작동 확인용 테스트 페이지</h1>
 
   <div id="setup">
     <label>플레이어 수 선택 (2~5명):</label>
@@ -18,21 +18,8 @@
   </div>
 
   <div id="game-area" class="hidden">
-    <h2 id="turn-display"></h2>
-
-    <div id="status-area"></div>
-    <div id="instruction"></div>
-    <div id="player-hand"></div>
-
-    <h3>필드 카드</h3>
-    <div id="fields"></div>
-
-    <div id="draw-deck"></div>
-
-    <div id="game-end" class="hidden">
-      <h2 id="winner"></h2>
-      <button onclick="resetGame()">다시 시작</button>
-    </div>
+    <h2 id="turn-display">게임 시작됨</h2>
+    <button onclick="resetGame()">다시 시작</button>
   </div>
 
   <script src="script.js"></script>
